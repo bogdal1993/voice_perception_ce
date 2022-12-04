@@ -1,0 +1,22 @@
+services:
+  vosk:
+    image: alphacep/kaldi-ru:latest
+    ports:
+      - "2700:2700"
+  file_api:
+    image: vp/baseweb
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./file_api/main.py:/opt/file_api/main.py
+      - ./media:/opt/media
+    working_dir: /opt/file_api/
+    command: uvicorn main:app --port 8000 --host 0.0.0.0
+  transcript:
+    image: vp/base_audio_process
+    volumes:
+      - ./transcript_server/main.py:/opt/transcript_server/main.py
+      - ./media:/opt/media
+      - ./tempmedia:/opt/tempmedia
+    working_dir: /opt/transcript_server/
+    command: python main.py
